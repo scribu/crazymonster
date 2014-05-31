@@ -15,6 +15,7 @@ function scare(sphero) {
 
 function startSphero(spheroPort, callback) {
 	var sphero = spheron.sphero();
+	sphero.resetTimeout(true);
 	sphero.on('open', function(err) {
 		if (err) throw err;
 		console.log('Connected to Sphero...');
