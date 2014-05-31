@@ -40,7 +40,7 @@ var controlSphero = function(sphero) {
       if (g.type == 'swipe' && g.state ==='stop') {
         handleSwipe(g);
       }
-      if (g.type == 'keyTap') {
+      if (g.type == 'keyTap' && g.state ==='stop') {
         console.log('keyTap');
         handleTap(g);
       }
@@ -62,8 +62,25 @@ var controlSphero = function(sphero) {
 		  cur_color = 0;
   };
 
+  var drawCircle = function(g) {
+	  var step = 0;
+
+	  var step = function() {
+		  sphero.setHeading(10);
+		  step++;
+		  if (step<36)
+			  setTimeout(step, 100);
+	  }
+
+	  step();
+  };
+
+  var flip = function(g) {
+	  sphero.setRawMotorValues(0x01, 255, 0x02, 253, 255);
+  }
+
   var handleCircle = function(g) {
-    sphero.write(spheron.commands.api.setHeading(10, { resetTimeout:true }));
+    sphero.write(spheron.commands.api.setHeading(30, { resetTimeout:true }));
   };
 
   var handleSwipe = function(g) {
@@ -160,6 +177,7 @@ ball.open(device);
 console.log("waiting for Sphero connection...");
 ball.on('open', function() {
   console.log('connected to Sphero');
+  ball.resetTimeout();
   ball.setRGB(spheron.toolbelt.COLORS.PURPLE).setBackLED(255);
   controlSphero(ball);
 });
