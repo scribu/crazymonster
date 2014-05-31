@@ -1,12 +1,23 @@
 /* jshint node:true */
 
-var Leap = require('leapjs');
-var spheron = require('spheron');
-
 // Set this to the device Sphero connects as on your computer
 var device = '/dev/cu.Sphero-YBW-RN-SPP';
 
 var safeMode = true; //Turn this off if Sphero is in water or you like to live dangerously!
+
+
+var Leap = require('leapjs');
+var spheron = require('spheron');
+var macro = spheron.commands.macro;
+var C = spheron.toolbelt.COLORS;
+
+var flipMacroId = 101;
+var flip = spheron.macro(flipMacroId);
+flip.append(macro.setStabilization(false));
+flip.append(macro.setRawMotorValues(0x01, 255, 0x01, 253, 255));
+flip.append(macro.setRGB(C.GREEN, 60));
+flip.append(macro.goto(flip.id()));
+
 
 var controlSphero = function(sphero) {
 
@@ -52,7 +63,6 @@ var controlSphero = function(sphero) {
     }
   });
 
-  var C = spheron.toolbelt.COLORS;
   var colors = [ C.BLACK, C.BLUE, C.GREEN, C.ORANGE, C.PINK, C.PURPLE, C.RED, C.WHITE, C.YELLOW ];
   var cur_color = 0;
 
@@ -74,10 +84,6 @@ var controlSphero = function(sphero) {
 
 	  step();
   };
-
-  var flip = function(g) {
-	  sphero.setRawMotorValues(0x01, 255, 0x02, 253, 255);
-  }
 
   var handleCircle = function(g) {
     sphero.write(spheron.commands.api.setHeading(30, { resetTimeout:true }));
@@ -132,7 +138,7 @@ var controlSphero = function(sphero) {
         }
         break;
       case 'UP':
-        stopSphero(sphero);
+        sphero.runMacro(flipMacroId);
         break;
       case 'DOWN':
         stopSphero(sphero);
@@ -173,6 +179,7 @@ var stopSphero = function(sphero) {
 
 var ball = spheron.sphero().resetTimeout(true);
 ball.open(device);
+ball.saveTemporaryMacro(flip.done());
 
 console.log("waiting for Sphero connection...");
 ball.on('open', function() {
