@@ -1,7 +1,7 @@
 /* jshint node:true */
 
 // Set this to the device Sphero connects as on your computer
-var device = '/dev/cu.Sphero-YBW-RN-SPP';
+var settings = require('./settings.js');
 
 var safeMode = true; //Turn this off if Sphero is in water or you like to live dangerously!
 

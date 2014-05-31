@@ -1,3 +1,5 @@
+var settings = require('./settings.js');
+
 var spheron = require('spheron');
 var repl = require('repl');
 
@@ -42,4 +44,4 @@ function startRepl(sphero) {
 	context.scare = scare;
 }
 
-startSphero('/dev/cu.Sphero-YBW-RN-SPP', startRepl);
+startSphero(settings.device, startRepl);
