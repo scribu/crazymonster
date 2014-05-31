@@ -1,0 +1,8 @@
+{
+	"name": "crazymonster",
+	"version": "0.0.0",
+	"dependencies": {
+		"leapjs": "0.6.0",
+		"spheron": "0.0.2"
+	}
+}
