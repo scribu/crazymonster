@@ -184,7 +184,6 @@ ball.saveTemporaryMacro(flip.done());
 console.log("waiting for Sphero connection...");
 ball.on('open', function() {
   console.log('connected to Sphero');
-  ball.resetTimeout();
   ball.setRGB(spheron.toolbelt.COLORS.PURPLE).setBackLED(255);
   controlSphero(ball);
 });
