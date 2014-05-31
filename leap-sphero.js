@@ -40,6 +40,10 @@ var controlSphero = function(sphero) {
       if (g.type == 'swipe' && g.state ==='stop') {
         handleSwipe(g);
       }
+      if (g.type == 'keyTap') {
+        console.log('keyTap');
+        handleTap(g);
+      }
       if (g.type == 'circle') {
         console.log('circle');
         handleCircle(g);
@@ -47,6 +51,16 @@ var controlSphero = function(sphero) {
 
     }
   });
+
+  var C = spheron.toolbelt.COLORS;
+  var colors = [ C.BLACK, C.BLUE, C.GREEN, C.ORANGE, C.PINK, C.PURPLE, C.RED, C.WHITE, C.YELLOW ];
+  var cur_color = 0;
+
+  var handleTap = function(g) {
+	  sphero.setRGB(colors[cur_color++]);
+	  if (cur_color > colors.length-1)
+		  cur_color = 0;
+  };
 
   var handleCircle = function(g) {
     sphero.write(spheron.commands.api.setHeading(10, { resetTimeout:true }));
