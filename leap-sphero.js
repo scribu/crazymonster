@@ -14,7 +14,7 @@ var C = spheron.toolbelt.COLORS;
 var flipMacroId = 101;
 var flip = spheron.macro(flipMacroId);
 flip.append(macro.sendRawMotorCommands(0x01, 255, 0x01, 255, 60));
-flip.append(macro.setRGB(C.GREEN, 60));
+flip.append(macro.setRGB(C.RED, 60));
 flip.append(macro.goto(flip.id()));
 
 
@@ -173,6 +173,7 @@ var controlSphero = function(sphero) {
 
 
 var stopSphero = function(sphero) {
+  sphero.abortMacro();
   sphero.roll(0,sphero.heading||0,0);
 };
 
