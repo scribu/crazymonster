@@ -2,6 +2,7 @@
 
 // Set this to the device Sphero connects as on your computer
 var settings = require('./settings.js');
+var processFrame = require('./gestures.js').processFrame;
 
 var safeMode = true; //Turn this off if Sphero is in water or you like to live dangerously!
 
@@ -11,70 +12,28 @@ var spheron = require('spheron');
 var macro = spheron.commands.macro;
 var C = spheron.toolbelt.COLORS;
 
-var flipMacroId = 101;
-var flip = spheron.macro(flipMacroId);
-flip.append(macro.sendRawMotorCommands(0x01, 255, 0x01, 255, 60));
-flip.append(macro.setRGB(C.RED, 60));
-flip.append(macro.goto(flip.id()));
+function flip(sphero) {
+	var t;
 
-function IdentifyGesture(frame) {
-            var detectedMove;
+	function turnOrange() {
+		sphero.setRGB(C.ORANGE);
+		t = setTimeout(turnRed, 300);
+	}
+	t = setTimeout(turnOrange, 100);
 
-            if (frame.hands.length > 0) {
-                if (frame.hands[0].grabStrength > 0.8) {
-                    return "grab";
-                }
+	function turnRed() {
+		sphero.setRGB(C.RED);
+	}
 
-                if (frame.hands[0].pinchStrength > 0.8) {
-                    return "pinch";
-                }
-
-                if (frame.hands[0].direction[1] > 0.45 && frame.hands[0].direction[1] < 0.65) {
-                    return "turnUp";
-                }
-
-                if (frame.hands[0].direction[1] < -0.45 && frame.hands[0].direction[1] > -0.65) {
-                    return "turnDown";
-                }
-
-                if (frame.hands[0].direction[0] > 0.45 && frame.hands[0].direction[1] < 0.65) {
-                    return "turnRight";
-                }
-
-                if (frame.hands[0].direction[0] < -0.45 && frame.hands[0].direction[1] > -0.65) {
-                    return "turnLeft";
-                }
-            }
-           
-            for (var i = 0; i < frame.gestures.length; i++) {
-                var gesture = frame.gestures[i];
-
-                if (gesture.type == "swipe") {
-                    //Classify swipe as either horizontal or vertical
-                    var isHorizontal = Math.abs(gesture.direction[0]) > Math.abs(gesture.direction[1]);
-                    //Classify as right-left or up-down
-                    if (isHorizontal) {
-                        if (gesture.direction[0] > 0) {
-                            detectedMove = "swipeRight";
-                        } else {
-                            detectedMove = "swipeLeft";
-                        }
-                    } else { //vertical
-                        if (gesture.direction[1] > 0) {
-                            detectedMove = "swipeUp";
-                        } else {
-                            detectedMove = "swipeDown";
-                        }
-                    }
-                }
-
-                if (gesture.type == "keyTap") {
-                    return gesture.type;
-                }
-            }
-
-            return detectedMove;
-        }
+	sphero.setRawMotorValues(0x01, 255, 0x01, 255);
+	function breakM() {
+		// sphero.setRawMotorValues(0x03, 0, 0x03, 255);
+		sphero.setStabalisation(true);
+		clearTimeout(t);
+		sphero.setRGB(C.BLACK);
+	}
+	setTimeout(breakM, 2000);
+}
 
 function rollSphero(sphero, heading) {
 	sphero.roll(128, heading, 1);
@@ -140,13 +99,17 @@ var controlSphero = function(sphero) {
 		console.log('device disconnected');
 	});
 	controller.on('frame', function(frame) {
-		var gesture = IdentifyGesture(frame);
-		console.log(gesture);
-		handleGesture(gesture);
+		var gesture = processFrame(frame);
+		if (gesture !== null) {
+			console.log(gesture);
+			handleGesture(gesture);
+		}
 	});
 
 	var handleGesture = function(g) {
-		switch (g) {
+		sphero.abortMacro();
+
+		switch (g.name) {
 			case 'swipeLeft':
 				rollSphero(sphero, 270);
 			break;
@@ -159,17 +122,18 @@ var controlSphero = function(sphero) {
 			case 'turnRight':
 				sphero.setHeading(45);
 			break;
-			case 'turnForward':
+			case 'turnDown':
 				rollSphero(sphero, 0);
 			break;
-			case 'turnBackward':
+			case 'turnUp':
 				rollSphero(sphero, 180);
 			break;
 			case 'swipeDown':
 				stopSphero(sphero);
 			break;
 			case 'grab':
-				sphero.runMacro(flipMacroId);
+				sphero.runMacro(255);
+				flip(sphero);
 			break;
 			case 'keyTap':
 				handleTap(sphero);
@@ -186,7 +150,6 @@ ball.open(settings.device);
 
 console.log("waiting for Sphero connection...");
 ball.on('open', function() {
-	ball.saveTemporaryMacro(flip.done());
 	console.log('connected to Sphero');
 	ball.setRGB(spheron.toolbelt.COLORS.PURPLE).setBackLED(255);
 	controlSphero(ball);

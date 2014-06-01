@@ -40,7 +40,7 @@ function startSphero(spheroPort, callback) {
 function startRepl(sphero) {
 	var context = repl.start('Spher⊚n > ').context;
 	context.s = context.sphero = sphero;
-	context.COLORS = spheron.toolbelt.COLORS;
+	context.C = spheron.toolbelt.COLORS;
 	context.scare = scare;
 }
 
