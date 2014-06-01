@@ -111,32 +111,31 @@ var controlSphero = function(sphero) {
 		switch (g.name) {
 			case 'swipeLeft':
 				rollSphero(sphero, g.value, 270);
-			break;
+				break;
 			case 'swipeRight':
 				rollSphero(sphero, g.value, 90);
-			break;
+				break;
 			case 'turnLeft':
-				sphero.setHeading(315);
-			break;
+				sphero.setHeading(330);
+				break;
 			case 'turnRight':
-				sphero.setHeading(45);
-			break;
+				sphero.setHeading(30);
+				break;
 			case 'turnDown':
 				rollSphero(sphero, g.value, 0);
 			break;
 			case 'turnUp':
-				rollSphero(sphero, g.value, 180);
-			break;
 			case 'swipeDown':
 				stopSphero(sphero);
-			break;
+				break;
 			case 'grab':
 				sphero.runMacro(255);
 				flip(sphero);
-			break;
+				break;
+			case 'pinch':
 			case 'keyTap':
 				handleTap(sphero);
-			break;
+				break;
 		}
 	}
 
@@ -150,6 +149,6 @@ ball.open(settings.device);
 console.log("waiting for Sphero connection...");
 ball.on('open', function() {
 	console.log('connected to Sphero');
-	ball.setRGB(spheron.toolbelt.COLORS.PURPLE).setBackLED(255);
+	ball.setRGB(C.BLACK).setBackLED(255);
 	controlSphero(ball);
 });
