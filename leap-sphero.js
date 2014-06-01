@@ -35,7 +35,8 @@ function flip(sphero) {
 	setTimeout(breakM, 2000);
 }
 
-function rollSphero(sphero, heading) {
+function rollSphero(sphero, power, heading) {
+	// sphero.roll(Math.round(Math.abs(power)*255), heading, 0);
 	sphero.roll(128, heading, 1);
 	if (safeMode) {
 		setTimeout(function() {
@@ -107,26 +108,24 @@ var controlSphero = function(sphero) {
 	});
 
 	var handleGesture = function(g) {
-		sphero.abortMacro();
-
 		switch (g.name) {
 			case 'swipeLeft':
-				rollSphero(sphero, 270);
+				rollSphero(sphero, g.value, 270);
 			break;
 			case 'swipeRight':
-				rollSphero(sphero, 90);
+				rollSphero(sphero, g.value, 90);
 			break;
 			case 'turnLeft':
-				sphero.setHeading(225);
+				sphero.setHeading(315);
 			break;
 			case 'turnRight':
 				sphero.setHeading(45);
 			break;
 			case 'turnDown':
-				rollSphero(sphero, 0);
+				rollSphero(sphero, g.value, 0);
 			break;
 			case 'turnUp':
-				rollSphero(sphero, 180);
+				rollSphero(sphero, g.value, 180);
 			break;
 			case 'swipeDown':
 				stopSphero(sphero);
